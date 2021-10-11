@@ -3,11 +3,14 @@ import threading
 
 IP = '0.0.0.0'
 PORT = 9998
+MAX_BACKLOG_CONN = 5
 
 def main():
+    # TCP
     server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     server.bind((IP, PORT))
-    server.listen(5)
+    # Max backlog connections 
+    server.listen(MAX_BACKLOG_CONN)
     print(f'[*] Listening on {IP}:{PORT}')
 
     while True:
@@ -16,12 +19,12 @@ def main():
         client_handler = threading.Thread(target=handle_client, args=(client,))
         client_handler.start()
 
-    def handle_client(client_socket):
-        with client_socket as sock:
-            request = sock.recv(1024)
-            print(f'[*] Received: {request.decode("utf-8")}')
-            sock.send(b'ACK')
+def handle_client(client_socket):
+    with client_socket as sock:
+        request = sock.recv(1024)
+        print(f'[*] Received: {request.decode("utf-8")}')
+        sock.send(b'ACK')
 
-    if __name__ == "__main__":
-        main()
+if __name__ == "__main__":
+    main()
 
